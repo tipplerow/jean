@@ -29,6 +29,36 @@ public final class EnsemblLocator {
     public static final String GENOME_DIR_PROPERTY = "jean.ensembl.genomeDir";
 
     /**
+     * Environment variable that defines the name of the Ensembl proteome
+     * file.  If the system property {@code jean.ensembl.primaryFile} is
+     * also defined, it will override the environment variable.
+     */
+    public static final String PROTEOME_FILE_ENV = "JEAN_ENSEMBL_PROTEOME_FILE";
+
+    /**
+     * System property that defines the absolute path name for the
+     * Ensembl proteome file.  If the property is not defined, the
+     * environment variable {@code PROTEOME_FILE_ENV} will be used.
+     */
+    public static final String PROTEOME_FILE_PROPERTY = "jean.ensembl.proteomeFile";
+
+    /**
+     * Environment variable that defines the name of the secondary
+     * Ensembl proteome file (an older version which can serve as a
+     * backstop when mapping to third-party data.  If the system
+     * property {@code jean.ensembl.secondaryProteome} is also
+     * defined, it will override the environment variable.
+     */
+    public static final String SECONDARY_PROTEOME_ENV = "JEAN_ENSEMBL_SECONDARY_PROTEOME";
+
+    /**
+     * System property that defines the name of the secondary Ensembl
+     * proteome file.  If the property is not defined, the environment
+     * variable {@code SECONDARY_PROTEOME_ENV} will be used.
+     */
+    public static final String SECONDARY_PROTEOME_PROPERTY = "jean.ensembl.secondaryProteome";
+
+    /**
      * Returns the file that contains the nucleotide sequence for a
      * specific human chromosome.
      *
@@ -86,5 +116,59 @@ public final class EnsemblLocator {
             return JamProperties.getRequired(GENOME_DIR_PROPERTY);
         else
             return JamEnv.getRequired(GENOME_DIR_ENV);
+    }
+
+    /**
+     * Returns the file that contains the primary Ensembl proteome.
+     *
+     * @return the file that contains the primary Ensembl proteome.
+     */
+    public static File resolvePrimaryProteomeFile() {
+        return new File(resolvePrimaryProteomeFileName());
+    }
+
+    /**
+     * Returns the name of the file that contains the primary Ensembl
+     * proteome.
+     *
+     * @return the name of the file that contains the primary Ensembl
+     * proteome.
+     */
+    public static String resolvePrimaryProteomeFileName() {
+        if (JamProperties.isSet(PROTEOME_FILE_PROPERTY))
+            return JamProperties.getRequired(PROTEOME_FILE_PROPERTY);
+        else
+            return JamEnv.getRequired(PROTEOME_FILE_ENV);
+    }
+
+    /**
+     * Returns the file that contains the secondary Ensembl proteome.
+     *
+     * @return the file that contains the secondary Ensembl proteome
+     * ({@code null} if none has been specified).
+     */
+    public static File resolveSecondaryProteomeFile() {
+        String fileName = resolveSecondaryProteomeFileName();
+
+        if (fileName != null)
+            return new File(fileName);
+        else
+            return null;
+    }
+
+    /**
+     * Returns the name of the file that contains the secondary
+     * Ensembl proteome.
+     *
+     * @return the name of the file that contains the secondary
+     * Ensembl proteome ({@code null} if none has been specified).
+     */
+    public static String resolveSecondaryProteomeFileName() {
+        if (JamProperties.isSet(SECONDARY_PROTEOME_PROPERTY))
+            return JamProperties.getRequired(SECONDARY_PROTEOME_PROPERTY);
+        else if (JamEnv.isSet(SECONDARY_PROTEOME_ENV))
+            return JamEnv.getRequired(SECONDARY_PROTEOME_ENV);
+        else
+            return null;
     }
 }
