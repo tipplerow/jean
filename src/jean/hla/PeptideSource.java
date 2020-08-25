@@ -1,5 +1,5 @@
 
-package jam.hla;
+package jean.hla;
 
 /**
  * Enumerates the source of the peptide fragments bound to MHC
