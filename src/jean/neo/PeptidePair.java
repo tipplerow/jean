@@ -1,6 +1,10 @@
 
 package jean.neo;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import jean.peptide.Peptide;
 
 /**
@@ -28,6 +32,62 @@ public final class PeptidePair {
      */
     public static PeptidePair instance(SelfPeptide self, NeoPeptide neo) {
         return new PeptidePair(self, neo);
+    }
+
+    /**
+     * Extracts the neo-peptides from a collection of pairs.
+     *
+     * @param pairs the peptide pairs to process.
+     *
+     * @return the neo-peptides contained in the specified pairs (in
+     * the order returned by the collection iterator).
+     */
+    public static List<Peptide> neo(Collection<PeptidePair> pairs) {
+        List<Peptide> peptides =
+            new ArrayList<Peptide>(pairs.size());
+
+        for (PeptidePair pair : pairs)
+            peptides.add(pair.neo());
+
+        return peptides;
+    }
+
+    /**
+     * Extracts the self-peptides from a collection of pairs.
+     *
+     * @param pairs the peptide pairs to process.
+     *
+     * @return the self-peptides contained in the specified pairs (in
+     * the order returned by the collection iterator).
+     */
+    public static List<Peptide> self(Collection<PeptidePair> pairs) {
+        List<Peptide> peptides =
+            new ArrayList<Peptide>(pairs.size());
+
+        for (PeptidePair pair : pairs)
+            peptides.add(pair.self());
+
+        return peptides;
+    }
+
+    /**
+     * Extracts the peptides from a collection of pairs.
+     *
+     * @param pairs the peptide pairs to process.
+     *
+     * @return the neo-peptides and self-peptides contained in the
+     * specified pairs (in no particular order).
+     */
+    public static Collection<Peptide> peptides(Collection<PeptidePair> pairs) {
+        Collection<Peptide> peptides =
+            new ArrayList<Peptide>(2 * pairs.size());
+
+        for (PeptidePair pair : pairs) {
+            peptides.add(pair.self());
+            peptides.add(pair.neo());
+        }
+
+        return peptides;
     }
 
     /**
