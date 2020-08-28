@@ -7,6 +7,8 @@ import java.util.Set;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 
+import jam.lang.JamException;
+import jam.lang.ObjectUtil;
 import jam.util.CollectionUtil;
 import jam.util.ListUtil;
 import jam.util.MultisetUtil;
@@ -123,6 +125,50 @@ public final class MissenseRecord {
     }
 
     /**
+     * Given duplicate or conflicting mutation records, this method
+     * elects the record with the higher cancer cell fraction.
+     *
+     * @param rec1 the first duplicate or conflicting record.
+     *
+     * @param rec2 the second duplicate or conflicting record.
+     *
+     * @return the record with the higher cancer cell fraction.
+     *
+     * @throws RuntimeException if the records refer to different
+     * tumor barcodes, genes, peptide positions, or native residues
+     * or if the records have identical cancer cell fractions.
+     */
+    public static MissenseRecord resolveDuplicate(MissenseRecord rec1, MissenseRecord rec2) {
+        if (!rec1.tumorBarcode.equals(rec2.tumorBarcode))
+            throw JamException.runtime("Inconsistent barcodes.");
+
+        if (!rec1.hugoSymbol.equals(rec2.hugoSymbol))
+            throw JamException.runtime("Inconsistent symbols.");
+
+        if (!ObjectUtil.equals(rec1.transcriptID, rec2.transcriptID))
+            throw JamException.runtime("Inconsistent transcripts.");
+
+        if (rec1.proteinChange.getPosition() != rec2.proteinChange.getPosition())
+            throw JamException.runtime("Inconsistent positions.");
+
+        if (!rec1.proteinChange.getNative().equals(rec2.proteinChange.getNative()))
+            throw JamException.runtime("Inconsistent native residues.");
+
+        if (rec1.cellFraction.GT(rec2.cellFraction))
+            return rec1;
+
+        if (rec2.cellFraction.GT(rec1.cellFraction))
+            return rec2;
+
+        // Cell fractions are equal: cannot resolve unless both
+        // mutated residues agree...
+        if (rec1.proteinChange.getMutated().equals(rec2.proteinChange.getMutated()))
+            return rec1;
+        else
+            throw JamException.runtime("Cannot resolve conflicting mutations: [%s, %s].", rec1, rec2);
+    }
+
+    /**
      * Returns the HUGO symbol of the mutated gene.
      *
      * @return the HUGO symbol of the mutated gene.
@@ -177,5 +223,4 @@ public final class MissenseRecord {
     public boolean hasTranscriptID() {
         return transcriptID != null;
     }
-
 }

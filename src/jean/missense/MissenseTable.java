@@ -134,6 +134,23 @@ public final class MissenseTable {
     }
 
     /**
+     * Groups the mutations by barcode and symbol.
+     *
+     * @return a list containing all unique missense groups in this
+     * table.
+     */
+    public List<MissenseGroup> group() {
+        List<MissenseGroup> groups =
+            new ArrayList<MissenseGroup>();
+
+        for (TumorBarcode barcode : viewBarcodes())
+            for (HugoSymbol symbol : viewSymbols(barcode))
+                groups.add(MissenseGroup.create(lookup(barcode, symbol)));
+
+        return groups;
+    }
+
+    /**
      * Returns all missense mutations for a given tumor and gene.
      *
      * @param barcode the tumor barcode of interest.

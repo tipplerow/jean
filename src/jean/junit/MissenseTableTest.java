@@ -1,7 +1,10 @@
 
 package jean.junit;
 
+import java.util.List;
+
 import jean.hugo.HugoSymbol;
+import jean.missense.MissenseGroup;
 import jean.missense.MissenseRecord;
 import jean.missense.MissenseTable;
 import jean.tcga.TumorBarcode;
@@ -20,8 +23,39 @@ public class MissenseTableTest {
     private static final HugoSymbol ACADS   = HugoSymbol.instance("ACADS");
     private static final HugoSymbol ADAMTS2 = HugoSymbol.instance("ADAMTS2");
     private static final HugoSymbol GPR158  = HugoSymbol.instance("GPR158");
-    private static final HugoSymbol OR5M3 = HugoSymbol.instance("OR5M3");
+    private static final HugoSymbol OR5M3   = HugoSymbol.instance("OR5M3");
     private static final HugoSymbol ZNF583  = HugoSymbol.instance("ZNF583");
+
+    @Test public void testGroup() {
+        MissenseTable table = MissenseTable.load("data/test/Miao_missense.maf");
+
+        List<MissenseGroup> groups = table.group();
+        groups.sort(MissenseGroup.COMPARATOR);
+
+        TumorBarcode miao1 = TumorBarcode.instance("AC-DFCI_AC_PD1-1-Tumor-SM-9LRI9");
+        TumorBarcode miao2 = TumorBarcode.instance("Y2087_T");
+
+        HugoSymbol ASPM   = HugoSymbol.instance("ASPM");
+        HugoSymbol PRRC1  = HugoSymbol.instance("PRRC1");
+        HugoSymbol RINT1  = HugoSymbol.instance("RINT1");
+        HugoSymbol RNF31  = HugoSymbol.instance("RNF31");
+        HugoSymbol RXFP3  = HugoSymbol.instance("RXFP3");
+        HugoSymbol TTC39B = HugoSymbol.instance("TTC39B");
+
+        assertEquals(miao1, groups.get(0).getTumorBarcode());
+        assertEquals(miao1, groups.get(1).getTumorBarcode());
+        assertEquals(miao1, groups.get(2).getTumorBarcode());
+        assertEquals(miao1, groups.get(3).getTumorBarcode());
+        assertEquals(miao2, groups.get(4).getTumorBarcode());
+        assertEquals(miao2, groups.get(5).getTumorBarcode());
+
+        assertEquals(ASPM, groups.get(0).getHugoSymbol());
+        assertEquals(RINT1, groups.get(1).getHugoSymbol());
+        assertEquals(RNF31, groups.get(2).getHugoSymbol());
+        assertEquals(RXFP3, groups.get(3).getHugoSymbol());
+        assertEquals(PRRC1, groups.get(4).getHugoSymbol());
+        assertEquals(TTC39B, groups.get(5).getHugoSymbol());
+    }
 
     @Test public void testTCGA() {
         MissenseTable table = MissenseTable.load(TCGA_MAF);
