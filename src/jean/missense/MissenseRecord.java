@@ -223,4 +223,13 @@ public final class MissenseRecord {
     public boolean hasTranscriptID() {
         return transcriptID != null;
     }
+
+    @Override public String toString() {
+        return String.format("MissenseRecord(%s, %s, %s, %s, %.2f)",
+                             tumorBarcode.getKey(),
+                             hugoSymbol.getKey(),
+                             transcriptID != null ? transcriptID.getKey() : "null",
+                             proteinChange.format(),
+                             cellFraction.doubleValue());
+    }
 }

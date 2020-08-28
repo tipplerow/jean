@@ -7,6 +7,7 @@ import jean.hugo.HugoSymbol;
 import jean.missense.MissenseGroup;
 import jean.missense.MissenseRecord;
 import jean.missense.MissenseTable;
+import jean.tcga.CellFraction;
 import jean.tcga.TumorBarcode;
 
 import org.junit.*;
@@ -55,6 +56,17 @@ public class MissenseTableTest {
         assertEquals(RXFP3, groups.get(3).getHugoSymbol());
         assertEquals(PRRC1, groups.get(4).getHugoSymbol());
         assertEquals(TTC39B, groups.get(5).getHugoSymbol());
+    }
+
+    @Test public void testLoadThreshold() {
+        MissenseTable table = MissenseTable.load("data/test/Miao_missense.maf");
+        assertEquals(8, table.count());
+
+        table = MissenseTable.load("data/test/Miao_missense.maf", CellFraction.valueOf(0.25));
+        assertEquals(6, table.count());
+
+        table = MissenseTable.load("data/test/Miao_missense.maf", CellFraction.valueOf(0.55));
+        assertEquals(3, table.count());
     }
 
     @Test public void testTCGA() {

@@ -11,6 +11,7 @@ import jam.app.JamLogger;
 import jam.util.PairKeyTable;
 
 import jean.hugo.HugoSymbol;
+import jean.tcga.CellFraction;
 import jean.tcga.TumorBarcode;
 
 /**
@@ -25,19 +26,25 @@ public final class MissenseTable {
     // All mutations indexed by barcode (outer) and symbol (inner)...
     private final PairKeyTable<TumorBarcode, HugoSymbol, RecordList> table = PairKeyTable.hash();
 
-    private MissenseTable(Collection<MissenseRecord> records) {
-        fillMap(records);
+    // Total number of records in the table...
+    private int count = 0;
+
+    private MissenseTable(Collection<MissenseRecord> records, CellFraction threshold) {
+        fillMap(records, threshold);
+        JamLogger.info("MissenseTable: Retained [%d] records.", count);
     }
 
-    private void fillMap(Collection<MissenseRecord> records) {
+    private void fillMap(Collection<MissenseRecord> records, CellFraction threshold) {
         for (MissenseRecord record : records)
-            addRecord(record);
+            if (record.getCellFraction().above(threshold))
+                addRecord(record);
     }
 
     private void addRecord(MissenseRecord record) {
         HugoSymbol   symbol  = record.getHugoSymbol();
         TumorBarcode barcode = record.getTumorBarcode();
 
+        ++count;
         recordList(barcode, symbol).add(record);
     }
 
@@ -65,10 +72,29 @@ public final class MissenseTable {
      * reading and contains properly formatted records.
      */
     public static MissenseTable load(String fileName) {
+        return load(fileName, CellFraction.ZERO);
+    }
+
+    /**
+     * Populates a table by reading missense mutation records from a
+     * given file and retaining those above a cell fraction threshold.
+     *
+     * @param fileName the path to the missense mutation file.
+     *
+     * @param threshold the minimum cancer cell fraction required to
+     * be included in the table.
+     *
+     * @return a table containing missense mutation records in the
+     * given file above the specified CCF threshold.
+     *
+     * @throws RuntimeException unless the file can be opened for
+     * reading and contains properly formatted records.
+     */
+    public static MissenseTable load(String fileName, CellFraction threshold) {
         List<MissenseRecord> records = MissenseParser.parse(fileName);
         JamLogger.info("MissenseTable: Loaded [%d] records.", records.size());
         
-        return load(records);
+        return load(records, threshold);
     }
 
     /**
@@ -79,12 +105,26 @@ public final class MissenseTable {
      *
      * @return a table containing all missense mutation records in
      * the given collection.
-     *
-     * @throws RuntimeException unless all Ensembl transcripts are
-     * identical for records with the same tumor sample and gene.
      */
     public static MissenseTable load(Collection<MissenseRecord> records) {
-        return new MissenseTable(records);
+        return new MissenseTable(records, CellFraction.ZERO);
+    }
+
+    /**
+     * Populates a table from a collection of missense mutation
+     * records.
+     *
+     * @param records the records to be indexed in the table.
+     *
+     * @param threshold the minimum cancer cell fraction required to
+     * be included in the table.
+     *
+     * @return a table containing all missense mutation records in
+     * the given collection with cell fractions above the specified
+     * threshold.
+     */
+    public static MissenseTable load(Collection<MissenseRecord> records, CellFraction threshold) {
+        return new MissenseTable(records, threshold);
     }
 
     /**
@@ -99,6 +139,15 @@ public final class MissenseTable {
      */
     public boolean contains(TumorBarcode barcode, HugoSymbol symbol) {
         return table.contains(barcode, symbol);
+    }
+
+    /**
+     * Returns the total number of records in this table.
+     *
+     * @return the total number of records in this table.
+     */
+    public int count() {
+        return count;
     }
 
     /**
@@ -143,9 +192,16 @@ public final class MissenseTable {
         List<MissenseGroup> groups =
             new ArrayList<MissenseGroup>();
 
-        for (TumorBarcode barcode : viewBarcodes())
-            for (HugoSymbol symbol : viewSymbols(barcode))
-                groups.add(MissenseGroup.create(lookup(barcode, symbol)));
+        for (TumorBarcode barcode : viewBarcodes()) {
+            for (HugoSymbol symbol : viewSymbols(barcode)) {
+                try {
+                    groups.add(MissenseGroup.create(lookup(barcode, symbol)));
+                }
+                catch (RuntimeException ex) {
+                    JamLogger.warn(ex);
+                }
+            }
+        }
 
         return groups;
     }
