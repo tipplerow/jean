@@ -7,8 +7,8 @@ package jean.ensembl;
 public final class EnsemblGeneID extends EnsemblID {
     private static final String LABEL_CODE = "gene:";
 
-    private EnsemblGeneID(String key) {
-        super(key);
+    private EnsemblGeneID(String key, boolean strip) {
+        super(key, strip);
     }
 
     /**
@@ -18,14 +18,29 @@ public final class EnsemblGeneID extends EnsemblID {
     public static final String COLUMN_NAME = "Gene_ID";
 
     /**
+     * Returns the Ensemble gene identifier for a given key string
+     * (with the version number removed).
+     *
+     * @param key the key string.
+     *
+     * @return the Ensemble gene identifier for the given key string
+     * (with the version number removed).
+     */
+    public static EnsemblGeneID instance(String key) {
+        return instance(key, true);
+    }
+
+    /**
      * Returns the Ensemble gene identifier for a given key string.
      *
      * @param key the key string.
      *
+     * @param strip whether to strip the version number from the key.
+     *
      * @return the Ensemble gene identifier for the given key string.
      */
-    public static EnsemblGeneID instance(String key) {
-        return new EnsemblGeneID(key);
+    public static EnsemblGeneID instance(String key, boolean strip) {
+        return new EnsemblGeneID(key, strip);
     }
 
     /**
@@ -39,6 +54,6 @@ public final class EnsemblGeneID extends EnsemblID {
      * properly formatted gene key.
      */
     public static EnsemblGeneID parseHeader(String headerLine) {
-        return new EnsemblGeneID(parseHeader(headerLine, LABEL_CODE));
+        return instance(parseHeader(headerLine, LABEL_CODE));
     }
 }

@@ -7,8 +7,8 @@ package jean.ensembl;
 public final class EnsemblTranscriptID extends EnsemblID {
     private static final String LABEL_CODE = "transcript:";
 
-    private EnsemblTranscriptID(String key) {
-        super(key);
+    private EnsemblTranscriptID(String key, boolean strip) {
+        super(key, strip);
     }
 
     /**
@@ -20,15 +20,30 @@ public final class EnsemblTranscriptID extends EnsemblID {
 
     /**
      * Returns the Ensemble transcript identifier for a given key
-     * string.
+     * string (with the version number removed).
      *
      * @param key the key string.
      *
      * @return the Ensemble transcript identifier for the given key
-     * string.
+     * string (with the version number removed).
      */
     public static EnsemblTranscriptID instance(String key) {
-        return new EnsemblTranscriptID(key);
+        return instance(key, true);
+    }
+
+    /**
+     * Returns the Ensemble transcript identifier for a given key
+     * string.
+     *
+     * @param key the key string.
+     *
+     * @param strip whether to strip the version number from the key.
+     *
+     * @return the Ensemble transcript identifier for the given key
+     * string.
+     */
+    public static EnsemblTranscriptID instance(String key, boolean strip) {
+        return new EnsemblTranscriptID(key, strip);
     }
 
     /**
@@ -42,6 +57,6 @@ public final class EnsemblTranscriptID extends EnsemblID {
      * properly formatted transcript key.
      */
     public static EnsemblTranscriptID parseHeader(String headerLine) {
-        return new EnsemblTranscriptID(parseHeader(headerLine, LABEL_CODE));
+        return instance(parseHeader(headerLine, LABEL_CODE));
     }
 }

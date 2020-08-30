@@ -370,6 +370,44 @@ public final class EnsemblProteinDb {
     }
 
     /**
+     * Returns the record mapped to a given protein.
+     *
+     * @param protein the protein of interest.
+     *
+     * @return the record mapped to the specified protein.
+     *
+     * @throws RuntimeException unless the correponding protein
+     * exists.
+     */
+    public EnsemblProteinRecord require(EnsemblProteinID protein) {
+        EnsemblProteinRecord record = get(protein);
+
+        if (record != null)
+            return record;
+        else
+            throw JamException.runtime("Unmapped protein: [%s].", protein.getKey());
+    }
+
+    /**
+     * Returns the record mapped to a given transcript.
+     *
+     * @param transcript the transcript of interest.
+     *
+     * @return the record mapped to the specified transcript.
+     *
+     * @throws RuntimeException unless the correponding protein
+     * exists.
+     */
+    public EnsemblProteinRecord require(EnsemblTranscriptID transcript) {
+        EnsemblProteinRecord record = get(transcript);
+
+        if (record != null)
+            return record;
+        else
+            throw JamException.runtime("Unmapped transcript: [%s].", transcript.getKey());
+    }
+
+    /**
      * Returns a read-only view of the transcripts in this map.
      *
      * @return a read-only set containing the transcripts in this map.

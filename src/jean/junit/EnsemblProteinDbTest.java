@@ -10,10 +10,8 @@ import org.junit.*;
 import static org.junit.Assert.*;
 
 public class EnsemblProteinDbTest {
-    private static final String ENSEMBL_FILE = "data/test/ensembl_test2.fa";
-
-    @Test public void testSample() {
-        EnsemblProteinDb db = EnsemblProteinDb.load(ENSEMBL_FILE);
+    @Test public void testSample2() {
+        EnsemblProteinDb db = EnsemblProteinDb.load("data/test/ensembl_test2.fa");
 
         HugoSymbol BRAF_Hugo = HugoSymbol.instance("BRAF");
         HugoSymbol KRAS_Hugo = HugoSymbol.instance("KRAS");

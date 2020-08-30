@@ -26,9 +26,11 @@ public abstract class EnsemblID extends KeyedObject<String> {
      * Creates a new Ensembl identifier.
      *
      * @param key the key string.
+     *
+     * @param strip whether to remove the version number from the key.
      */
-    protected EnsemblID(String key) {
-        super(key);
+    protected EnsemblID(String key, boolean strip) {
+        super(strip ? stripVersion(key) : key);
     }
 
     /**

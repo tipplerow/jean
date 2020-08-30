@@ -16,8 +16,8 @@ public class MissenseParserTest {
         List<MissenseRecord> records = MissenseParser.parse(MIAO_FILE);
         assertEquals(8, records.size());
 
-        assertRecord(records.get(5), "AC-DFCI_AC_PD1-1-Tumor-SM-9LRI9", "RXFP3", "ENST00000330120.3", "D296N", 0.60);
-        assertRecord(records.get(7), "Y2087_T", "TTC39B", "ENST00000512701.2", "A47S", 0.80);
+        assertRecord(records.get(5), "AC-DFCI_AC_PD1-1-Tumor-SM-9LRI9", "RXFP3", "ENST00000330120", "D296N", 0.60);
+        assertRecord(records.get(7), "Y2087_T", "TTC39B", "ENST00000512701", "A47S", 0.80);
     }
 
     private void assertRecord(MissenseRecord record,

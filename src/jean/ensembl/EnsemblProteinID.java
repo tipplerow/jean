@@ -7,8 +7,21 @@ import jam.util.RegexUtil;
  * Represents the unique Ensembl protein identifier.
  */
 public final class EnsemblProteinID extends EnsemblID {
-    private EnsemblProteinID(String key) {
-        super(key);
+    private EnsemblProteinID(String key, boolean strip) {
+        super(key, strip);
+    }
+
+    /**
+     * Returns the Ensemble protein identifier for a given key string
+     * (with the version number removed).
+     *
+     * @param key the key string.
+     *
+     * @return the Ensemble protein identifier for the given key string
+     * (with the version number removed).
+     */
+    public static EnsemblProteinID instance(String key) {
+        return instance(key, true);
     }
 
     /**
@@ -16,10 +29,12 @@ public final class EnsemblProteinID extends EnsemblID {
      *
      * @param key the key string.
      *
+     * @param strip whether to strip the version number from the key.
+     *
      * @return the Ensemble protein identifier for the given key string.
      */
-    public static EnsemblProteinID instance(String key) {
-        return new EnsemblProteinID(key);
+    public static EnsemblProteinID instance(String key, boolean strip) {
+        return new EnsemblProteinID(key, strip);
     }
 
     /**
