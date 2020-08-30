@@ -280,12 +280,13 @@ public final class Peptide extends AbstractList<Residue> {
      * and correspond to indexes {@code range.lower(), ..., range.upper()} on this
      * peptide.
      *
-     * @param range the index range of residues in the fragment.
+     * @param range the zero-offset index range of residues in the
+     * fragment.
      *
      * @return a read-only view of a subsegment of this peptide.
      *
-     * @throws RuntimeException unless the specified falls entirely
-     * within this peptide.
+     * @throws RuntimeException unless the specified fragment falls
+     * entirely within this peptide.
      */
     public Peptide fragment(IntRange range) {
         return new Peptide(residues.subList(range.lower(), range.upper() + 1), false);

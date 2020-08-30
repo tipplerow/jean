@@ -228,24 +228,29 @@ public final class ProteinChange {
      * @param fragmentLength the length of the peptide fragments
      * to identify.
      *
+     * @param nativeLength the length of the native peptide where
+     * the mutation occurred.
+     *
      * @return a list containing the residue index ranges for all
      * peptide fragments having the specified length that contain
      * the mutation.
      */
-    public List<IntRange> resolveFragments(int fragmentLength) {
-        int mutationIndex = getResidueIndex();
-
+    public List<IntRange> resolveFragments(int fragmentLength, int nativeLength) {
         List<IntRange> fragmentRanges =
             new ArrayList<IntRange>(fragmentLength);
 
-        for (int upperOffset = 0; upperOffset < fragmentLength; ++upperOffset) {
-            int upperResidue = mutationIndex + upperOffset;
-            int lowerResidue = upperResidue - fragmentLength + 1;
+        int mutationIndex = getResidueIndex();
+        int lowerResidue  = Math.max(0, mutationIndex - fragmentLength + 1);
+        int upperResidue  = lowerResidue + fragmentLength - 1;
 
+        while (lowerResidue <= mutationIndex && upperResidue < nativeLength) {
             IntRange fragmentRange =
                 IntRange.instance(lowerResidue, upperResidue);
 
             fragmentRanges.add(fragmentRange);
+
+            ++lowerResidue;
+            ++upperResidue;
         }
 
         return fragmentRanges;
