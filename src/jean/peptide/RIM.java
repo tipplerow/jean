@@ -4,7 +4,7 @@ package jean.peptide;
 import java.io.File;
 import java.util.List;
 
-import jam.app.JamHome;
+import jam.app.JamEnv;
 import jam.dist.RealDistribution;
 import jam.io.FileUtil;
 import jam.math.StatUtil;
@@ -66,7 +66,7 @@ public final class RIM {
     }
 
     private static File findMJData() {
-        return new File(FileUtil.join(JamHome.NAME, "data", "MJ_upper.csv"));
+        return new File(FileUtil.join(JamEnv.getRequired("JEAN_HOME"), "data", "rim", "MJ_upper.csv"));
     }
 
     /**
