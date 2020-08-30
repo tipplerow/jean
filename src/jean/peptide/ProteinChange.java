@@ -1,12 +1,14 @@
 
 package jean.peptide;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import jam.lang.JamException;
+import jam.math.IntRange;
 
 /**
  * Represents a single missense mutation in a peptide.
@@ -217,6 +219,36 @@ public final class ProteinChange {
         int residueIndex = getResidueIndex();
 
         return residueIndex < peptide.length() && peptide.get(residueIndex).equals(native_);
+    }
+
+    /**
+     * Finds all peptide fragments of a fixed length that contain
+     * the mutation.
+     *
+     * @param fragmentLength the length of the peptide fragments
+     * to identify.
+     *
+     * @return a list containing the residue index ranges for all
+     * peptide fragments having the specified length that contain
+     * the mutation.
+     */
+    public List<IntRange> resolveFragments(int fragmentLength) {
+        int mutationIndex = getResidueIndex();
+
+        List<IntRange> fragmentRanges =
+            new ArrayList<IntRange>(fragmentLength);
+
+        for (int upperOffset = 0; upperOffset < fragmentLength; ++upperOffset) {
+            int upperResidue = mutationIndex + upperOffset;
+            int lowerResidue = upperResidue - fragmentLength + 1;
+
+            IntRange fragmentRange =
+                IntRange.instance(lowerResidue, upperResidue);
+
+            fragmentRanges.add(fragmentRange);
+        }
+
+        return fragmentRanges;
     }
          
     @Override public boolean equals(Object obj) {

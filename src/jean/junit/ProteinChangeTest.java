@@ -4,6 +4,8 @@ package jean.junit;
 import java.util.ArrayList;
 import java.util.List;
 
+import jam.math.IntRange;
+
 import jean.peptide.Peptide;
 import jean.peptide.ProteinChange;
 import jean.peptide.Residue;
@@ -89,6 +91,21 @@ public class ProteinChangeTest {
         assertEquals(L, pc.getNative());
         assertEquals(V, pc.getMutated());
         assertEquals(123, pc.getPosition());
+    }
+
+    @Test public void testResolveFragments() {
+        ProteinChange pc = ProteinChange.parse("p.L123V");
+
+        assertEquals(List.of(IntRange.instance(114, 122),
+                             IntRange.instance(115, 123),
+                             IntRange.instance(116, 124),
+                             IntRange.instance(117, 125),
+                             IntRange.instance(118, 126),
+                             IntRange.instance(119, 127),
+                             IntRange.instance(120, 128),
+                             IntRange.instance(121, 129),
+                             IntRange.instance(122, 130)),
+                     pc.resolveFragments(9));
     }
 
     public static void main(String[] args) {
