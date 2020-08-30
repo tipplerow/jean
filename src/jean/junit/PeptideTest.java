@@ -56,7 +56,7 @@ public class PeptideTest {
 
     @Test public void testFragment() {
         Peptide full = Peptide.of(Residue.Ala, Residue.Cys, Residue.Leu, Residue.Phe, Residue.Arg);
-        Peptide frag = full.fragment(new IntRange(2, 3));
+        Peptide frag = full.fragment(IntRange.instance(2, 3));
 
         assertEquals(2, frag.length());
         assertEquals(Residue.Leu, frag.get(0));
@@ -66,7 +66,7 @@ public class PeptideTest {
     @Test(expected = RuntimeException.class)
     public void testFragmentInvalid() {
         Peptide full = Peptide.of(Residue.Ala, Residue.Cys, Residue.Leu, Residue.Phe, Residue.Arg);
-        Peptide frag = full.fragment(new IntRange(2, 8));
+        Peptide frag = full.fragment(IntRange.instance(2, 8));
     }
 
     @Test public void testHashCode() {

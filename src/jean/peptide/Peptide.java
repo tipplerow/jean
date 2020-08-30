@@ -379,7 +379,7 @@ public final class Peptide extends AbstractList<Residue> {
         List<Peptide> fragments = new ArrayList<Peptide>(length() - N + 1);
 
         for (int start = 0; start <= length() - N; ++start) {
-            Peptide fragment = fragment(new IntRange(start, start + N - 1));
+            Peptide fragment = fragment(IntRange.instance(start, start + N - 1));
 
             if (fragment.isNative())
                 fragments.add(fragment);
