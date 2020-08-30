@@ -95,6 +95,7 @@ public class ProteinChangeTest {
 
     @Test public void testResolveFragments() {
         ProteinChange pc = ProteinChange.parse("p.L123V");
+        List<IntRange> fragments = pc.resolveFragments(9);
 
         assertEquals(List.of(IntRange.instance(114, 122),
                              IntRange.instance(115, 123),
@@ -105,7 +106,10 @@ public class ProteinChangeTest {
                              IntRange.instance(120, 128),
                              IntRange.instance(121, 129),
                              IntRange.instance(122, 130)),
-                     pc.resolveFragments(9));
+                     fragments);
+
+        for (IntRange range : fragments)
+            assertEquals(9, range.size());
     }
 
     public static void main(String[] args) {
