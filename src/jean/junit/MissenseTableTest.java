@@ -43,6 +43,8 @@ public class MissenseTableTest {
         HugoSymbol RXFP3  = HugoSymbol.instance("RXFP3");
         HugoSymbol TTC39B = HugoSymbol.instance("TTC39B");
 
+        assertEquals(6, groups.size());
+
         assertEquals(miao1, groups.get(0).getTumorBarcode());
         assertEquals(miao1, groups.get(1).getTumorBarcode());
         assertEquals(miao1, groups.get(2).getTumorBarcode());
@@ -56,6 +58,17 @@ public class MissenseTableTest {
         assertEquals(RXFP3, groups.get(3).getHugoSymbol());
         assertEquals(PRRC1, groups.get(4).getHugoSymbol());
         assertEquals(TTC39B, groups.get(5).getHugoSymbol());
+
+        groups = table.group(miao2);
+        groups.sort(MissenseGroup.COMPARATOR);
+
+        assertEquals(2, groups.size());
+
+        assertEquals(miao2, groups.get(0).getTumorBarcode());
+        assertEquals(miao2, groups.get(1).getTumorBarcode());
+
+        assertEquals(PRRC1, groups.get(0).getHugoSymbol());
+        assertEquals(TTC39B, groups.get(1).getHugoSymbol());
     }
 
     @Test public void testLoadThreshold() {

@@ -2,6 +2,7 @@
 package jean.missense;
 
 import java.util.AbstractCollection;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,7 +17,10 @@ import jam.util.CollectionUtil;
 import jam.util.ListUtil;
 import jam.util.ReadOnlyIterator;
 
+import jean.ensembl.EnsemblProteinDb;
+import jean.ensembl.EnsemblProteinRecord;
 import jean.ensembl.EnsemblTranscriptID;
+import jean.hugo.HugoMaster;
 import jean.hugo.HugoSymbol;
 import jean.peptide.Peptide;
 import jean.peptide.ProteinChange;
@@ -183,6 +187,51 @@ public final class MissenseGroup extends AbstractCollection<MissenseRecord> impl
      */
     public Peptide mutate(Peptide native_) {
         return native_.mutate(getProteinChanges());
+    }
+
+    /**
+     * Finds the native protein structure for this mutation group.
+     *
+     * @param ensemblDb the Ensembl protein database.
+     *
+     * @param hugoMaster the mapping from HUGO symbols to Ensembl genes.
+     *
+     * @return the native protein structure for this mutation group.
+     */
+    public Peptide resolveNative(EnsemblProteinDb ensemblDb, HugoMaster hugoMaster) {
+        if (transcriptID != null)
+            return ensemblDb.require(transcriptID).getPeptide();
+
+        // Okay, no transcript identifier, so we use the first peptide
+        // with a sequence that is consistent with the protein changes...
+        List<ProteinChange> proteinChanges = getProteinChanges();
+        List<EnsemblProteinRecord> ensemblRecords = getEnsemblRecords(ensemblDb, hugoMaster);
+
+        for (EnsemblProteinRecord ensemblRecord : ensemblRecords) {
+            Peptide peptide = ensemblRecord.getPeptide();
+
+            if (ProteinChange.isNative(peptide, proteinChanges))
+                return peptide;
+        }
+
+        throw JamException.runtime("No consistent native Ensembl records.");
+    }
+
+    private List<EnsemblProteinRecord> getEnsemblRecords(EnsemblProteinDb ensemblDb, HugoMaster hugoMaster) {
+        //
+        // There are two ways to match HUGO symbols with Ensembl
+        // records: through the Ensemble gene identifiers in the
+        // HUGO master and through the Ensembl database itself...
+        //
+        List<EnsemblProteinRecord> ensemblRecords = new ArrayList<EnsemblProteinRecord>();
+
+        ensemblRecords.addAll(ensemblDb.get(hugoSymbol));
+        ensemblRecords.addAll(ensemblDb.get(hugoMaster.get(hugoSymbol)));
+
+        if (ensemblRecords.isEmpty())
+            throw JamException.runtime("No matching Ensembl records.");
+
+        return ensemblRecords;
     }
 
     /**
