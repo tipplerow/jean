@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import jam.app.JamLogger;
 import jam.math.IntRange;
 import jam.util.ListUtil;
 import jam.util.StreamUtil;
@@ -102,7 +103,12 @@ public final class PeptidePairEngine {
         List<List<PeptidePairRecord>> engineOutput =
             StreamUtil.applyParallel(missenseGroups, group -> generate(group, peptideLengths));
 
+        JamLogger.info("Concatenating peptide pair records...");
         List<PeptidePairRecord> pairRecords = ListUtil.cat(engineOutput);
+
+        JamLogger.info("Sorting peptide pair records...");
+        pairRecords.sort(PeptidePairRecord.COMPARATOR);
+
         return pairRecords;
     }
 
@@ -111,6 +117,9 @@ public final class PeptidePairEngine {
     }
 
     private List<PeptidePairRecord> generate() {
+        JamLogger.info("Generating peptide pairs: [%s, %s]...",
+                       tumorBarcode.getKey(), hugoSymbol.getKey());
+
         Peptide nativePeptide = missenseGroup.resolveNative(ensemblDb, hugoMaster);
         Peptide mutatedPeptide = missenseGroup.mutate(nativePeptide);
         Set<IntRange> fragmentRanges = resolveFragmentRanges(nativePeptide.length());

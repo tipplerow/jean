@@ -55,8 +55,13 @@ public class PeptidePairEngineTest {
 
         pairRecords = PeptidePairEngine.generate(missenseTable, 9);
 
-        for (PeptidePairRecord record : pairRecords)
-            System.out.println(record);
+        assertEquals(37, pairRecords.size());
+
+        assertEquals(barcode1, pairRecords.get(0).getTumorBarcode());
+        assertEquals(IntRange.instance(9, 17), pairRecords.get(0).getPeptideRange());
+
+        assertEquals(barcode2, pairRecords.get(36).getTumorBarcode());
+        assertEquals(IntRange.instance(181, 189), pairRecords.get(36).getPeptideRange());
     }
 
     public static void main(String[] args) {
